@@ -5,15 +5,15 @@ import {
   DefaultTheme as NavigationDefaultTheme,
 } from '@react-navigation/native';
 import {PaperProvider, adaptNavigationTheme} from 'react-native-paper';
-import {useColorScheme} from 'react-native';
+import {Platform, useColorScheme} from 'react-native';
 const {LightTheme, DarkTheme} = adaptNavigationTheme({
   reactNavigationLight: NavigationDefaultTheme,
   reactNavigationDark: NavigationDarkTheme,
 });
 
 export const ThemeContext = createContext({
-  isDark: false,
-  theme: LightTheme,
+  isDark: Platform.OS === 'ios' ? false : true,
+  theme: Platform.OS === 'ios' ? LightTheme : DarkTheme,
 });
 
 export const ThemeContextProvider = ({children}: PropsWithChildren) => {
