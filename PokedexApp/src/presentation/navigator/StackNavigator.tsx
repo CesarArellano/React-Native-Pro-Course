@@ -4,7 +4,7 @@ import {HomeScreen, PokemonScreen, SearchScreen} from '../screens';
 
 export type RootStackParams = {
   HomeScreen: undefined;
-  PokemonScreen: undefined;
+  PokemonScreen: {pokemonId: number};
   SearchScreen: undefined;
 };
 

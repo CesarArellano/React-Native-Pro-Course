@@ -1,32 +1,45 @@
 import React from 'react';
-import {Image, StyleSheet, View} from 'react-native';
+import {Image, Pressable, StyleSheet, View} from 'react-native';
 import {Card, Text} from 'react-native-paper';
 import {Pokemon} from '../../../domain/entities/pokemon';
+import {NavigationProp, useNavigation} from '@react-navigation/native';
+import {RootStackParams} from '../../navigator/StackNavigator';
 
 interface Props {
   pokemon: Pokemon;
 }
 
 export const PokemonCard = ({pokemon}: Props) => {
+  const navigation = useNavigation<NavigationProp<RootStackParams>>();
+
   return (
-    <Card style={[styles.cardContainer, {backgroundColor: pokemon.color}]}>
-      <Text style={styles.name} variant="bodyLarge">
-        {pokemon.name}
-        {'\n#' + pokemon.id}
-      </Text>
-      <View style={styles.pokeballContainer}>
-        <Image
-          source={require('../../../assets/pokeball-light.png')}
-          style={styles.pokeball}
-        />
-      </View>
-      <Image source={{uri: pokemon.avatar}} style={styles.pokemonImage} />
-      <Text style={[styles.name, styles.typesText]}>{pokemon.types[0]}</Text>
-    </Card>
+    <Pressable
+      style={styles.fullContainer}
+      onPress={() =>
+        navigation.navigate('PokemonScreen', {pokemonId: pokemon.id})
+      }>
+      <Card style={[styles.cardContainer, {backgroundColor: pokemon.color}]}>
+        <Text style={styles.name} variant="bodyLarge">
+          {pokemon.name}
+          {'\n#' + pokemon.id}
+        </Text>
+        <View style={styles.pokeballContainer}>
+          <Image
+            source={require('../../../assets/pokeball-light.png')}
+            style={styles.pokeball}
+          />
+        </View>
+        <Image source={{uri: pokemon.avatar}} style={styles.pokemonImage} />
+        <Text style={[styles.name, styles.typesText]}>{pokemon.types[0]}</Text>
+      </Card>
+    </Pressable>
   );
 };
 
 const styles = StyleSheet.create({
+  fullContainer: {
+    flex: 1,
+  },
   typesText: {
     marginTop: 35,
   },

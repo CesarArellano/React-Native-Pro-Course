@@ -1,14 +1,16 @@
 import React from 'react';
 import {FlatList, StyleSheet, View} from 'react-native';
-import {ActivityIndicator, Text} from 'react-native-paper';
-import {useInfiniteQuery} from '@tanstack/react-query';
+import {Text} from 'react-native-paper';
+import {useInfiniteQuery, useQueryClient} from '@tanstack/react-query';
 import {getPokemons} from '../../../actions/pokemons';
 import {PokeballBg} from '../../components/ui/PokeballBg';
 import {Pokemon} from '../../../domain/entities/pokemon';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {PokemonCard} from '../../components/pokemons/PokemonCard';
+import {FullScreenLoader} from '../../components/shared/FullScreenLoader';
 
 export const HomeScreen = () => {
+  const queryClient = useQueryClient();
   const {top} = useSafeAreaInsets();
   // Common Requests
   // const {isLoading, data: pokemons = []} = useQuery({
@@ -20,13 +22,19 @@ export const HomeScreen = () => {
   const {isLoading, data, fetchNextPage} = useInfiniteQuery({
     queryKey: ['pokemons', 'infinite'],
     initialPageParam: 0,
-    queryFn: params => getPokemons(params.pageParam),
+    queryFn: async params => {
+      const pokemons = await getPokemons(params.pageParam);
+      pokemons.forEach(pokemon => {
+        queryClient.setQueryData(['pokemon', pokemon.id], pokemon);
+      });
+      return pokemons;
+    },
     getNextPageParam: (lastPage, pages) => pages.length,
     staleTime: 1000 * 60 * 60, // 60 minutes
   });
 
   if (isLoading) {
-    return <ActivityIndicator size="large" style={styles.loadingIndicator} />;
+    return <FullScreenLoader />;
   }
 
   return (
@@ -57,9 +65,6 @@ const HeaderText = () => {
 };
 
 const styles = StyleSheet.create({
-  loadingIndicator: {
-    top: 10,
-  },
   headerText: {
     paddingBottom: 15,
   },

@@ -21,7 +21,7 @@ export const FadeInImage = ({uri, style}: Props) => {
   const isDisposed = useRef(false);
 
   const onLoadEnd = () => {
-    if (isDisposed) {
+    if (isDisposed.current) {
       return;
     }
     fadeIn({});
@@ -47,7 +47,7 @@ export const FadeInImage = ({uri, style}: Props) => {
       <Animated.Image
         source={{uri}}
         onLoadEnd={onLoadEnd}
-        style={[style, {opacity: animatedOpacity}]}
+        style={[style, styles.resize, {opacity: animatedOpacity}]}
       />
     </View>
   );
@@ -60,5 +60,8 @@ const styles = StyleSheet.create({
   },
   activityIndicator: {
     position: 'absolute',
+  },
+  resize: {
+    resizeMode: 'contain',
   },
 });
