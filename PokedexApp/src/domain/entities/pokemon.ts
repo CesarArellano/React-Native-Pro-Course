@@ -1,5 +1,3 @@
-// import {Move, Stat} from '../../infrastructure/interfaces/poke-api.interfaces';
-
 export interface Pokemon {
   id: number;
   name: string;
@@ -7,8 +5,18 @@ export interface Pokemon {
   avatar: string;
   sprites: string[];
   color: string;
-  // games: string[];
-  // stats: Stat[];
-  // abilities: string[];
-  // moves: Move[];
+  games: string[];
+  stats: PokemonStat[];
+  abilities: string[];
+  moves: PokemonMove[];
+}
+
+export interface PokemonStat {
+  name: string;
+  value: number;
+}
+
+export interface PokemonMove {
+  name: string;
+  level: number;
 }

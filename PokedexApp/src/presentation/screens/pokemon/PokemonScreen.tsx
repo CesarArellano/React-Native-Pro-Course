@@ -1,11 +1,4 @@
-import {
-  View,
-  Text,
-  ScrollView,
-  Image,
-  FlatList,
-  StyleSheet,
-} from 'react-native';
+import {View, ScrollView, Image, FlatList, StyleSheet} from 'react-native';
 import React, {useContext} from 'react';
 import {StackScreenProps} from '@react-navigation/stack';
 import {RootStackParams} from '../../navigator/StackNavigator';
@@ -13,10 +6,12 @@ import {getPokemonById} from '../../../actions/pokemons';
 import {useQuery} from '@tanstack/react-query';
 import {FullScreenLoader} from '../../components/shared/FullScreenLoader';
 import {FadeInImage} from '../../components/ui/FadeImage';
-import {Chip} from 'react-native-paper';
+import {Chip, Text} from 'react-native-paper';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {Formatter} from '../../../config/helpers/formatter';
 import {ThemeContext} from '../../context/ThemeContext';
+import {SimpleDataHorizontalList} from '../../components/shared/SimpleDataHorizontalList';
+import {ComplexDataHorizontalList} from '../../components/shared/ComplexDataHorizontalList';
 
 interface Props extends StackScreenProps<RootStackParams, 'PokemonScreen'> {}
 
@@ -87,6 +82,26 @@ export const PokemonScreen = ({route}: Props) => {
         )}
       />
 
+      <View style={styles.containerList}>
+        {/* Abilities */}
+        <SimpleDataHorizontalList
+          headerText="Abilities"
+          data={pokemon.abilities}
+        />
+        {/* Stats */}
+        <ComplexDataHorizontalList headerText="Stats" data={pokemon.stats} />
+        {/* Moves */}
+        <ComplexDataHorizontalList
+          headerText="Moves"
+          data={pokemon.moves.map(move => ({
+            name: move.name,
+            value: move.level,
+          }))}
+        />
+        {/* Games */}
+        <SimpleDataHorizontalList headerText="Games" data={pokemon.games} />
+      </View>
+
       <View style={styles.h100} />
     </ScrollView>
   );
@@ -153,4 +168,7 @@ const styles = StyleSheet.create({
     height: 100,
   },
   spriteImage: {width: 100, height: 100, marginHorizontal: 5},
+  containerList: {
+    paddingHorizontal: 15,
+  },
 });
