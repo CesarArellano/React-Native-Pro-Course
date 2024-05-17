@@ -1,6 +1,6 @@
 import React from 'react';
 import {FlatList, StyleSheet, View} from 'react-native';
-import {Text} from 'react-native-paper';
+import {FAB, Text, useTheme} from 'react-native-paper';
 import {useInfiniteQuery, useQueryClient} from '@tanstack/react-query';
 import {getPokemons} from '../../../actions/pokemons';
 import {PokeballBg} from '../../components/ui/PokeballBg';
@@ -8,8 +8,13 @@ import {Pokemon} from '../../../domain/entities/pokemon';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {PokemonCard} from '../../components/pokemons/PokemonCard';
 import {FullScreenLoader} from '../../components/shared/FullScreenLoader';
+import {globalTheme} from '../../../config/theme/global-theme';
+import {NavigationProp, useNavigation} from '@react-navigation/native';
+import {RootStackParams} from '../../navigator/StackNavigator';
 
 export const HomeScreen = () => {
+  const theme = useTheme();
+  const navigation = useNavigation<NavigationProp<RootStackParams>>();
   const queryClient = useQueryClient();
   const {top} = useSafeAreaInsets();
   // Common Requests
@@ -38,7 +43,7 @@ export const HomeScreen = () => {
   }
 
   return (
-    <View style={{}}>
+    <View>
       <PokeballBg style={styles.imgPosition} />
       <FlatList
         data={data?.pages.flat() ?? []}
@@ -51,6 +56,13 @@ export const HomeScreen = () => {
           <PokemonCard key={pokemon.index} pokemon={pokemon.item} />
         )}
         showsVerticalScrollIndicator
+      />
+      <FAB
+        label="Search"
+        style={[globalTheme.fab, {backgroundColor: theme.colors.primary}]}
+        color={theme.dark ? 'black' : 'white'}
+        mode="elevated"
+        onPress={() => navigation.navigate('SearchScreen')}
       />
     </View>
   );

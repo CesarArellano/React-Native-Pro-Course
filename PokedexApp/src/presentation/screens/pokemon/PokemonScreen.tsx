@@ -101,8 +101,6 @@ export const PokemonScreen = ({route}: Props) => {
         {/* Games */}
         <SimpleDataHorizontalList headerText="Games" data={pokemon.games} />
       </View>
-
-      <View style={styles.h100} />
     </ScrollView>
   );
 };
