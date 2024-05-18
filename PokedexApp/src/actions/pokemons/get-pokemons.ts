@@ -18,7 +18,7 @@ export const getPokemons = async (
     const url = '/pokemon';
     const {data} = await pokeApi.get<PokeApiPaginatedReponse>(url, {
       params: {
-        offset: page,
+        offset: page * 20,
         limit,
       },
     });
