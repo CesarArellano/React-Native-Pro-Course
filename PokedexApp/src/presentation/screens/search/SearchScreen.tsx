@@ -8,34 +8,39 @@ import {getPokemonNamesWithId} from '../../../actions/pokemons/';
 import {FullScreenLoader} from '../../components/shared/FullScreenLoader';
 import {getPokemonsByIds} from '../../../actions/pokemons/get-pokemons-by-ids';
 import {PokemonCard} from '../../components/pokemons/PokemonCard';
+import {useDebouncedValue} from '../../hooks/useDebouncedValue';
 
 export const SearchScreen = () => {
   const {top} = useSafeAreaInsets();
   const [term, setTerm] = useState<string>('');
+
+  const debouncedValue = useDebouncedValue(term);
   const {isLoading, data: pokemonNameList = []} = useQuery({
     queryKey: ['pokemons', 'all'],
     queryFn: () => getPokemonNamesWithId(),
   });
 
   const pokemonNameIdList = useMemo(() => {
-    if (!isNaN(Number(term))) {
-      const pokemon = pokemonNameList.find(item => item.id === Number(term));
+    if (!isNaN(Number(debouncedValue))) {
+      const pokemon = pokemonNameList.find(
+        item => item.id === Number(debouncedValue),
+      );
 
       return pokemon ? [pokemon] : [];
     }
 
-    if (term.length === 0) {
+    if (debouncedValue.length === 0) {
       return [];
     }
 
-    if (term.length < 3) {
+    if (debouncedValue.length < 3) {
       return [];
     }
 
     return pokemonNameList.filter(pokemon =>
-      pokemon.name.includes(term.toLocaleLowerCase()),
+      pokemon.name.includes(debouncedValue.toLocaleLowerCase()),
     );
-  }, [term, pokemonNameList]);
+  }, [debouncedValue, pokemonNameList]);
 
   const {isLoading: isLoadingPokemons, data: pokemons = []} = useQuery({
     queryKey: ['pokemon', 'by', pokemonNameIdList],
