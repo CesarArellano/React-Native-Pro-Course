@@ -2,12 +2,14 @@ import React from 'react';
 
 import {NavigationContainer} from '@react-navigation/native';
 import {StackNavigator} from './presentation/navigation/StackNavigator';
-import {PaperProvider} from 'react-native-paper';
+import {PermissionsChecker} from './presentation/providers/PermissionsChecker';
 
 export const MapsApp = () => {
   return (
     <NavigationContainer>
-      <StackNavigator />
+      <PermissionsChecker>
+        <StackNavigator />
+      </PermissionsChecker>
     </NavigationContainer>
   );
 };
