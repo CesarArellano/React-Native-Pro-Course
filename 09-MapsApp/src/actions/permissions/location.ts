@@ -22,6 +22,7 @@ export const requestLocationPermission =
 
     if (status === 'blocked') {
       await openSettings();
+      return checkLocationPermission();
     }
 
     return permissionMapper(status);
