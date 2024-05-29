@@ -3,7 +3,7 @@ import {SafeAreaView, StyleSheet} from 'react-native';
 import {PaperProvider} from 'react-native-paper';
 
 import IonIcon from 'react-native-vector-icons/Ionicons';
-import {HomeworkScreen} from './src/presentation/screens/HomeworkScreen';
+import {FormScreen} from './src/presentation/components/FormScreen';
 
 const MainApp = () => {
   return (
@@ -12,7 +12,7 @@ const MainApp = () => {
         icon: props => <IonIcon {...props} />,
       }}>
       <SafeAreaView style={styles.container}>
-        <HomeworkScreen />
+        <FormScreen />
       </SafeAreaView>
     </PaperProvider>
   );
