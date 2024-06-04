@@ -1,5 +1,5 @@
 import {StyleSheet} from 'react-native';
-import React, {useRef} from 'react';
+import React, {useEffect, useRef} from 'react';
 import MapView, {PROVIDER_GOOGLE} from 'react-native-maps';
 import {Location} from '../../../infrastructure/interfaces/location';
 import {FAB} from '../shared/FAB';
@@ -16,7 +16,8 @@ export const CustomMap = ({
 }: Props) => {
   const mapRef = useRef<MapView>();
   const cameraLocation = useRef<Location>(initialLocation);
-  const {lasKnownLocation, getLocation} = useLocationStore();
+  const {lasKnownLocation, getLocation, watchLocation, clearWatchLocation} =
+    useLocationStore();
 
   const moveCameraToLocation = (location: Location) => {
     if (!mapRef.current) {
@@ -40,6 +41,20 @@ export const CustomMap = ({
     }
     moveCameraToLocation(location);
   };
+
+  useEffect(() => {
+    watchLocation();
+
+    return () => {
+      clearWatchLocation();
+    };
+  });
+
+  useEffect(() => {
+    if (lasKnownLocation) {
+      moveCameraToLocation(lasKnownLocation);
+    }
+  }, [lasKnownLocation]);
 
   return (
     <>
