@@ -1,6 +1,6 @@
 import {StyleSheet} from 'react-native';
-import React, {useEffect, useRef} from 'react';
-import MapView, {PROVIDER_GOOGLE} from 'react-native-maps';
+import React, {useEffect, useRef, useState} from 'react';
+import MapView, {PROVIDER_GOOGLE, Polyline} from 'react-native-maps';
 import {Location} from '../../../infrastructure/interfaces/location';
 import {FAB} from '../shared/FAB';
 import {useLocationStore} from '../../store/location/useLocationStore';
@@ -16,8 +16,15 @@ export const CustomMap = ({
 }: Props) => {
   const mapRef = useRef<MapView>();
   const cameraLocation = useRef<Location>(initialLocation);
-  const {lasKnownLocation, getLocation, watchLocation, clearWatchLocation} =
-    useLocationStore();
+  const [isFollowingUser, setIsFollowingUser] = useState(true);
+  const [isShowingPolyline, setIsShowingPolyline] = useState(true);
+  const {
+    lasKnownLocation,
+    getLocation,
+    watchLocation,
+    clearWatchLocation,
+    userLocationList,
+  } = useLocationStore();
 
   const moveCameraToLocation = (location: Location) => {
     if (!mapRef.current) {
@@ -48,21 +55,22 @@ export const CustomMap = ({
     return () => {
       clearWatchLocation();
     };
-  });
+  }, [watchLocation, clearWatchLocation]);
 
   useEffect(() => {
-    if (lasKnownLocation) {
+    if (lasKnownLocation && isFollowingUser) {
       moveCameraToLocation(lasKnownLocation);
     }
-  }, [lasKnownLocation]);
+  }, [lasKnownLocation, isFollowingUser]);
 
   return (
     <>
       <MapView
         ref={map => (mapRef.current = map!)}
         showsUserLocation={showsUserLocation}
-        provider={PROVIDER_GOOGLE} // remove if not using Google Maps
+        provider={PROVIDER_GOOGLE}
         style={styles.map}
+        onTouchStart={_ => setIsFollowingUser(false)}
         showsMyLocationButton={false}
         region={{
           latitude: cameraLocation.current.latitude,
@@ -71,10 +79,23 @@ export const CustomMap = ({
           longitudeDelta: 0.0121,
         }}
       />
+      {isShowingPolyline && (
+        <Polyline coordinates={userLocationList} strokeWidth={5} />
+      )}
+      <FAB
+        iconName={isShowingPolyline ? 'eye-outline' : 'eye-off-outline'}
+        onPress={() => setIsShowingPolyline(!isShowingPolyline)}
+        style={styles.polylineViewFab}
+      />
+      <FAB
+        iconName={isFollowingUser ? 'walk-outline' : 'accessibility-outline'}
+        onPress={() => setIsFollowingUser(!isFollowingUser)}
+        style={styles.trackingUserFab}
+      />
       <FAB
         iconName="compass-outline"
         onPress={() => moveToCurrentLocation()}
-        style={styles.fab}
+        style={styles.locationFab}
       />
     </>
   );
@@ -84,8 +105,16 @@ const styles = StyleSheet.create({
   map: {
     flex: 1,
   },
-  fab: {
+  polylineViewFab: {
+    bottom: 140,
+    right: 20,
+  },
+  locationFab: {
     bottom: 20,
+    right: 20,
+  },
+  trackingUserFab: {
+    bottom: 80,
     right: 20,
   },
 });
