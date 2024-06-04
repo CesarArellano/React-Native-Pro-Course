@@ -1,15 +1,26 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {StyleSheet, View} from 'react-native';
 import {CustomMap} from '../../components/maps/Map';
-import {getCurrentLocation} from '../../../actions/location/location';
-import {Location} from '../../../infrastructure/interfaces/location';
+import {useLocationStore} from '../../store/location/useLocationStore';
+import {FullScreenLoader} from '../../components/shared/FullScreenLoader';
 
 export const MapsScreen = () => {
-  getCurrentLocation().then(location => {
-    console.log({location});
+  const {lasKnownLocation, getLocation} = useLocationStore();
+
+  useEffect(() => {
+    if (lasKnownLocation === null) {
+      getLocation();
+    }
   });
 
-  return <View style={styles.fullContainer}>{/* <CustomMap /> */}</View>;
+  if (lasKnownLocation === null) {
+    return <FullScreenLoader />;
+  }
+  return (
+    <View style={styles.fullContainer}>
+      <CustomMap initialLocation={lasKnownLocation} />
+    </View>
+  );
 };
 
 const styles = StyleSheet.create({
